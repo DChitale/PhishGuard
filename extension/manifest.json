@@ -1,37 +1,43 @@
 {
-    "manifest_version": 3,
-    "name": "PhishGuard",
-    "version": "1.0",
-    "description": "Detects phishing attempts by scanning URLs with VirusTotal",
-    "icons": {
+  "manifest_version": 3,
+  "name": "PhishGuard",
+  "version": "1.0",
+  "description": "Detects phishing attempts by scanning URLs with VirusTotal",
+  "icons": {
+    "48": "icons/image.png",
+    "96": "icons/image.png",
+    "128": "icons/image.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "webNavigation",
+    "scripting",
+    "clipboardRead",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "*://*/*",
+    "http://localhost:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
       "48": "icons/image.png",
-      "96": "icons/image.png",
-      "128": "icons/image.png"
-    },
-    "permissions": [
-      "activeTab",
-      "storage",
-      "webNavigation",
-      "scripting"
-    ],
-    "host_permissions": [
-      "*://*/*",
-      "http://localhost:8000/*"
-    ],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"]
-      }
-    ],
-    "action": {
-      "default_popup": "popup/popup.html",
-      "default_icon": {
-        "48": "icons/image.png",
-        "96": "icons/image.png"
-      }
+      "96": "icons/image.png"
     }
   }
+}

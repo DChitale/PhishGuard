@@ -8,7 +8,7 @@ const urlAnalysisCache = {};
 function handleLinkHover(event) {
   const link = event.target.closest('a');
   if (!link || !link.href) return;
-  
+
   checkLinkSafety(link.href).then(result => {
     if (result.threat_level === 'malicious') {
       showWarningTooltip(link, result);
@@ -19,7 +19,7 @@ function handleLinkHover(event) {
 function handleLinkClick(event) {
   const link = event.target.closest('a');
   if (!link || !link.href) return;
-  
+
   checkLinkSafety(link.href).then(result => {
     if (result.threat_level === 'malicious') {
       event.preventDefault();
@@ -33,18 +33,18 @@ async function checkLinkSafety(url) {
   if (urlAnalysisCache[url]) {
     return urlAnalysisCache[url];
   }
-  
+
   try {
     const response = await chrome.runtime.sendMessage({
       action: "scanUrl",
       url: url
     });
-    
+
     if (response.error) {
       console.error('Error scanning URL:', response.error);
       return { threat_level: 'unknown', result: 'Error' };
     }
-    
+
     // Cache the result
     urlAnalysisCache[url] = response;
     return response;
@@ -58,7 +58,7 @@ function showWarningTooltip(element, result) {
   // Remove any existing tooltip
   const existingTooltip = document.getElementById('phishguard-tooltip');
   if (existingTooltip) existingTooltip.remove();
-  
+
   const tooltip = document.createElement('div');
   tooltip.id = 'phishguard-tooltip';
   tooltip.innerHTML = `
@@ -68,7 +68,7 @@ function showWarningTooltip(element, result) {
       <p>${getWarningMessage(result)}</p>
     </div>
   `;
-  
+
   // Style the tooltip
   tooltip.style.position = 'absolute';
   tooltip.style.zIndex = '9999';
@@ -79,14 +79,14 @@ function showWarningTooltip(element, result) {
   tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
   tooltip.style.maxWidth = '300px';
   tooltip.style.fontSize = '14px';
-  
+
   // Position the tooltip near the element
   const rect = element.getBoundingClientRect();
   tooltip.style.top = `${rect.bottom + window.scrollY + 5}px`;
   tooltip.style.left = `${rect.left + window.scrollX}px`;
-  
+
   document.body.appendChild(tooltip);
-  
+
   // Remove tooltip after delay
   setTimeout(() => {
     if (tooltip.parentNode) {
@@ -109,7 +109,7 @@ function showWarningPopup(element, result) {
       </div>
     </div>
   `;
-  
+
   // Style the popup
   popup.style.position = 'fixed';
   popup.style.top = '50%';
@@ -123,7 +123,7 @@ function showWarningPopup(element, result) {
   popup.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
   popup.style.maxWidth = '400px';
   popup.style.textAlign = 'center';
-  
+
   // Add overlay
   const overlay = document.createElement('div');
   overlay.style.position = 'fixed';
@@ -133,17 +133,17 @@ function showWarningPopup(element, result) {
   overlay.style.height = '100%';
   overlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
   overlay.style.zIndex = '9998';
-  
+
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
-  
+
   // Add event listeners to buttons
   document.getElementById('phishguard-proceed').addEventListener('click', () => {
     document.body.removeChild(overlay);
     document.body.removeChild(popup);
     window.location.href = element.href;
   });
-  
+
   document.getElementById('phishguard-cancel').addEventListener('click', () => {
     document.body.removeChild(overlay);
     document.body.removeChild(popup);
@@ -166,27 +166,31 @@ function getWarningMessage(result) {
 }
 
 // Function to scan all links on the page (called from popup)
-function scanAllLinks() {
-  const links = document.querySelectorAll('a[href]');
+// Function to scan all links on the page (called from popup)
+async function scanAllLinks() {
+  const links = Array.from(document.querySelectorAll('a[href]'));
+
   let maliciousCount = 0;
   let safeCount = 0;
-  
-  links.forEach(link => {
-    checkLinkSafety(link.href).then(result => {
+
+  await Promise.all(
+    links.map(async (link) => {
+      const result = await checkLinkSafety(link.href);
       if (result.threat_level === 'malicious') {
         maliciousCount++;
         link.style.border = '2px solid red';
       } else {
         safeCount++;
       }
-    });
-  });
-  
+    })
+  );
+
   return { total: links.length, malicious: maliciousCount, safe: safeCount };
 }
 
+
 // Expose functions to the popup
-window.PhishGuard = { 
+window.PhishGuard = {
   scanAllLinks,
   scanEmailContent: async (content) => {
     try {

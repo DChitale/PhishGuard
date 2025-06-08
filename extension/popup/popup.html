@@ -1,55 +1,274 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PhishGuard</title>
-  <link href="styles.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Custom animations and effects that aren't in Tailwind */
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      33% {
+        transform: translateY(-10px) rotate(120deg);
+      }
+
+      66% {
+        transform: translateY(5px) rotate(240deg);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        left: -100%;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+
+    @keyframes pulse-custom {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes slideUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes warning-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 rgba(239, 68, 68, 0.7);
+      }
+
+      50% {
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+      }
+    }
+
+    @keyframes alert-shine {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    .bg-animated {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bg-animated::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 118, 117, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255, 209, 102, 0.3) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    .logo-pulse::after {
+      content: '🛡';
+      margin-left: 8px;
+      animation: pulse-custom 2s infinite;
+    }
+
+    .btn-hover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-hover:hover::before {
+      left: 100%;
+    }
+
+    .results-enter {
+      transform: translateY(20px);
+      opacity: 0;
+      animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .stat-warning {
+      animation: warning-pulse 2s infinite;
+    }
+
+    .alert-shine::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.1;
+      background: linear-gradient(45deg, transparent 30%, white 50%, transparent 70%);
+      animation: alert-shine 3s infinite;
+    }
+
+    .btn-loading {
+      color: transparent;
+    }
+
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 p-4 w-64">
-  <div class="text-center mb-4">
-    <h1 class="text-xl font-bold text-blue-600">PhishGuard</h1>
-    <p class="text-sm text-gray-600">URL and Email Phishing Protection</p>
-  </div>
-  
-  <div class="mb-4 space-y-2">
-    <button id="scanPage" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-      Scan Current Page
-    </button>
-    <button id="scanClipboard" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
-      Scan Clipboard Content
-    </button>
-  </div>
-  
-  <div id="scanResults" class="hidden mb-4 p-3 bg-white rounded shadow">
-    <h2 class="font-semibold mb-2 text-center">Scan Results</h2>
-    <div class="space-y-2">
-      <div class="flex justify-between">
-        <span>Total links:</span>
-        <span id="totalLinks" class="font-medium">0</span>
-      </div>
-      <div class="flex justify-between text-red-600">
-        <span>Malicious:</span>
-        <span id="maliciousLinks" class="font-medium">0</span>
-      </div>
-      <div class="flex justify-between text-green-600">
-        <span>Safe:</span>
-        <span id="safeLinks" class="font-medium">0</span>
+
+<body class="bg-animated w-80 min-h-screen">
+  <div class="z-10 relative p-5 h-full">
+    <!-- Header -->
+    <div class="relative shadow-2xl mb-6 p-5 rounded-3xl overflow-hidden text-center glass-card">
+      <h1 class="drop-shadow-lg mb-2 font-bold text-white text-3xl logo-pulse">PhishGuard</h1>
+      <p class="opacity-90 text-white text-sm">Advanced Phishing Protection</p>
+    </div>
+
+    <!-- Button Group -->
+    <div class="flex flex-col gap-4 mb-6">
+      <button id="scanPage"
+        class="relative bg-gradient-to-br from-indigo-600 to-purple-600 disabled:opacity-60 shadow-xl hover:shadow-2xl hover:shadow-indigo-500 backdrop-blur-sm px-5 py-4 border border-0 border-white border-opacity-20 rounded-2xl overflow-hidden font-semibold text-white disabled:transform-none transition-all hover:-translate-y-1 active:translate-y-0 duration-300 cursor-pointer disabled:cursor-not-allowed btn-hover hover:transform active:transform">
+        🌐 Scan Current Page
+      </button>
+
+      <button id="scanClipboard"
+        class="relative bg-gradient-to-br from-emerald-600 to-teal-600 disabled:opacity-60 shadow-xl hover:shadow-2xl hover:shadow-emerald-500 backdrop-blur-sm px-5 py-4 border border-0 border-white border-opacity-20 rounded-2xl overflow-hidden font-semibold text-white disabled:transform-none transition-all hover:-translate-y-1 active:translate-y-0 duration-300 cursor-pointer disabled:cursor-not-allowed btn-hover hover:transform active:transform">
+        📋 Analyze Clipboard Content
+      </button>
+    </div>
+
+    <!-- Scan Results Card -->
+    <div id="scanResults"
+      class="hidden bg-white bg-opacity-95 shadow-2xl backdrop-blur-3xl mb-4 p-5 border border-white border-opacity-30 rounded-3xl results-enter">
+      <h2 class="relative mb-4 font-semibold text-gray-800 text-lg text-center">
+        Security Scan Results
+        <div
+          class="bottom-0 left-1/2 absolute bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full w-10 h-1 -translate-x-1/2 translate-y-2 transform">
+        </div>
+      </h2>
+
+      <div class="gap-3 grid">
+        <div
+          class="flex justify-between items-center bg-white bg-opacity-70 hover:bg-opacity-90 hover:shadow-lg p-3 border border-black border-opacity-5 rounded-xl transition-all hover:translate-x-1 duration-300 hover:transform">
+          <span class="font-medium text-gray-700">📊 Total Links</span>
+          <span id="totalLinks"
+            class="bg-gradient-to-br from-indigo-500 to-purple-600 px-3 py-1 rounded-lg font-bold text-white text-lg">0</span>
+        </div>
+
+        <div
+          class="flex justify-between items-center bg-white bg-opacity-70 hover:bg-opacity-90 hover:shadow-lg p-3 border border-black border-opacity-5 rounded-xl transition-all hover:translate-x-1 duration-300 hover:transform">
+          <span class="font-medium text-gray-700">⚠ Threats Detected</span>
+          <span id="maliciousLinks"
+            class="bg-gradient-to-br from-red-500 to-orange-500 px-3 py-1 rounded-lg font-bold text-white text-lg stat-warning">0</span>
+        </div>
+
+        <div
+          class="flex justify-between items-center bg-white bg-opacity-70 hover:bg-opacity-90 hover:shadow-lg p-3 border border-black border-opacity-5 rounded-xl transition-all hover:translate-x-1 duration-300 hover:transform">
+          <span class="font-medium text-gray-700">✅ Verified Safe</span>
+          <span id="safeLinks"
+            class="bg-gradient-to-br from-green-500 to-emerald-600 px-3 py-1 rounded-lg font-bold text-white text-lg">0</span>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <div id="emailResults" class="hidden mb-4 p-3 bg-white rounded shadow">
-    <h2 class="font-semibold mb-2 text-center">Email Analysis</h2>
-    <div id="emailAnalysisContent" class="text-sm"></div>
-  </div>
-  
-  <div class="mt-4 pt-4 border-t border-gray-200">
-    <div class="text-center text-xs text-gray-500">
-      <p>Connected to your PhishGuard backend</p>
+
+    <!-- Email Results Card -->
+    <div id="emailResults"
+      class="hidden bg-white bg-opacity-95 shadow-2xl backdrop-blur-3xl mb-4 p-5 border border-white border-opacity-30 rounded-3xl results-enter">
+      <h2 class="relative mb-4 font-semibold text-gray-800 text-lg text-center">
+        Email Security Analysis
+        <div
+          class="bottom-0 left-1/2 absolute bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full w-10 h-1 -translate-x-1/2 translate-y-2 transform">
+        </div>
+      </h2>
+      <div id="emailAnalysisContent" class="text-sm leading-relaxed"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-auto pt-5 border-white border-t border-opacity-20 text-center">
+      <p class="opacity-80 text-white text-xs">
+        🔒 Powered by Advanced AI Security
+      </p>
     </div>
   </div>
-  
+
+
   <script src="popup.js"></script>
 </body>
+
 </html>
