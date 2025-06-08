@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard</title>
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-4 w-64">
+  <div class="text-center mb-4">
+    <h1 class="text-xl font-bold text-blue-600">PhishGuard</h1>
+    <p class="text-sm text-gray-600">URL and Email Phishing Protection</p>
+  </div>
+  
+  <div class="mb-4 space-y-2">
+    <button id="scanPage" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+      Scan Current Page
+    </button>
+    <button id="scanClipboard" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+      Scan Clipboard Content
+    </button>
+  </div>
+  
+  <div id="scanResults" class="hidden mb-4 p-3 bg-white rounded shadow">
+    <h2 class="font-semibold mb-2 text-center">Scan Results</h2>
+    <div class="space-y-2">
+      <div class="flex justify-between">
+        <span>Total links:</span>
+        <span id="totalLinks" class="font-medium">0</span>
+      </div>
+      <div class="flex justify-between text-red-600">
+        <span>Malicious:</span>
+        <span id="maliciousLinks" class="font-medium">0</span>
+      </div>
+      <div class="flex justify-between text-green-600">
+        <span>Safe:</span>
+        <span id="safeLinks" class="font-medium">0</span>
+      </div>
+    </div>
+  </div>
+  
+  <div id="emailResults" class="hidden mb-4 p-3 bg-white rounded shadow">
+    <h2 class="font-semibold mb-2 text-center">Email Analysis</h2>
+    <div id="emailAnalysisContent" class="text-sm"></div>
+  </div>
+  
+  <div class="mt-4 pt-4 border-t border-gray-200">
+    <div class="text-center text-xs text-gray-500">
+      <p>Connected to your PhishGuard backend</p>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
